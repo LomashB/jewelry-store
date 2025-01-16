@@ -1,4 +1,5 @@
 'use client';
+
 import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
@@ -32,15 +33,18 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// Define the correct page props interface
-interface CategoryPageProps {
+// Use the correct Next.js page props type
+type Props = {
   params: {
     category: string;
   };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: Props) {
   try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
