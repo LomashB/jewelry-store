@@ -18,9 +18,7 @@ async function getProductsByCategory(category: string) {
   const res = await fetch(
     `https://dummyjson.com/products/category/${apiCategory}`,
     {
-      next: {
-        revalidate: 60,
-      },
+      next: { revalidate: 60 }, // Cache revalidation
     }
   );
 
@@ -33,16 +31,12 @@ async function getProductsByCategory(category: string) {
 }
 
 // Page Component
-export default async function CategoryPage({
-  params,
-}: {
-  params: Promise<{ category: string }>;
-}) {
+export default async function ProductPage({ params }: { params: { id: string } }) {
   try {
-    // Await params before destructuring
-    const { category } = await params;
+    const { id: category } = await Promise.resolve(params);    
     const products = await getProductsByCategory(category);
 
+    // Format category name
     const formattedCategory = category
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
