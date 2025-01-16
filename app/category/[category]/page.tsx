@@ -61,9 +61,10 @@ export async function generateStaticParams() {
 }
 
 export default async function CategoryPage({
-  params,
-}:CategoryPageProps) 
-   {
+    params,
+  }: {
+    params: { category: string }
+  }) {
   try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
