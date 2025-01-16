@@ -4,6 +4,7 @@ import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
 
+// Fetch products by category
 async function getProductsByCategory(category: string) {
   const categoryMapping: { [key: string]: string } = {
     earrings: "beauty",
@@ -33,23 +34,17 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// Use the correct Next.js page props type
-type Props = {
-  params: {
-    category: string;
-  };
-  searchParams: Record<string, string | string[] | undefined>;
-}
-
+// Page Component
 export default async function CategoryPage({
   params,
-  searchParams,
-}: Props) {
+}: {
+  params: { category: string };
+}) {
   try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
     return (
