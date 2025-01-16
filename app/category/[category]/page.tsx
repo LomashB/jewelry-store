@@ -34,12 +34,12 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-export async function generateStaticParams() {
-    const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
-    return categories.map((category) => ({
-        category: category,
-    }));
-}
+// export async function generateStaticParams() {
+//     const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
+//     return categories.map((category) => ({
+//         category: category,
+//     }));
+// }
 
 
 type Props = {
