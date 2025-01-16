@@ -30,7 +30,7 @@ export default async function Home() {
       <div className="max-w-7xl mx-auto px-4 bg-white">
         <div className="py-8">
           <h1 className="text-2xl font-bold mb-4 text-black">Exploring Brass</h1>
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-wrap gap-2 justify-between items-center mb-8">
             <div className="flex gap-4">
               <button className="border border-black text-black px-4 py-2">SORT BY</button>
               <select className=" px-4 py-2 border border-black text-black">
@@ -43,7 +43,7 @@ export default async function Home() {
             <span>29 Designs</span>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}

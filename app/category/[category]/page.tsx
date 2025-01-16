@@ -2,22 +2,59 @@ import { Product } from '@/types';
 import ProductCard from '@/components/ProductCard';
 import { notFound } from 'next/navigation';
 
-async function getProductsByCategory(category: string) {
-  const res = await fetch(`https://dummyjson.com/products/category/${category}`, {
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch products');
+interface CategoryPageProps {
+    params: {
+      category: string;
+    };
+    searchParams?: { [key: string]: string | string[] | undefined };
   }
+  
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Fetches products from a specified category.
+ * 
+ * This function maps the given category to a corresponding category used by the API.
+ * If a mapping is not found, it defaults to using the original category.
+ * It then fetches products from the external API for the determined category.
+ * 
+ * @param category - The category to fetch products for.
+ * @returns A promise that resolves to an array of products.
+ * @throws An error if the fetch request fails.
+ */
 
-  const data = await res.json();
-  return data.products;
-}
+/******  1cdbe60c-90d4-485b-bbce-2b9f84197bf0  *******/
+async function getProductsByCategory(category: string) {
+
+    // Category mapping
+    const categoryMapping: { [key: string]: string } = {
+        'earrings': 'beauty',
+        'necklaces': 'fragrances',
+        'bracelets': 'furniture',
+        'rings': 'groceries',
+        'more-styles': 'beauty',
+        'stories': 'groceries',
+        'gifts': 'furniture'
+      };
+  
+      // Use mapped category or fallback to original category
+      const apiCategory = categoryMapping[category] || category;
+    const res = await fetch(`https://dummyjson.com/products/category/${apiCategory}`, {
+      next: {
+        revalidate: 60,
+      },
+    });
+  
+    if (!res.ok) {
+      throw new Error("Failed to fetch products");
+    }
+  
+    const data = await res.json();
+    return data.products;
+  }
 
 export async function generateStaticParams() {
   // Define your categories here
-  const categories = ['earrings', 'necklaces', 'bracelets', 'rings'];
+  const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
   return categories.map((category) => ({
     category: category,
   }));
@@ -25,9 +62,8 @@ export async function generateStaticParams() {
 
 export default async function CategoryPage({
   params,
-}: {
-  params: { category: string };
-}) {
+}:CategoryPageProps) 
+   {
   try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
@@ -63,8 +99,8 @@ export default async function CategoryPage({
 
           <div className="mt-8">
             {products.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-lg text-gray-500">
+              <div className="text-center py-20">
+                <p className="text-lg h-40 text-gray-500">
                   No products found in this category.
                 </p>
               </div>

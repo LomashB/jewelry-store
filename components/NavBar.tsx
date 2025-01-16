@@ -16,7 +16,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-2xl font-bold">
-              SHAYA
+              <img src="/logo.svg" alt="SHAYA" />
             </Link>
             
             <div className="hidden md:flex space-x-8 text-sm">
@@ -24,9 +24,9 @@ export default function Navbar() {
               <Link href="/category/necklaces" className="hover:text-accent">NECKLACES</Link>
               <Link href="/category/bracelets" className="hover:text-accent">BRACELETS</Link>
               <Link href="/category/rings" className="hover:text-accent">RINGS</Link>
-              <Link href="/more-styles" className="hover:text-accent">MORE STYLES</Link>
-              <Link href="/stories" className="hover:text-accent">STORIES</Link>
-              <Link href="/gifts" className="hover:text-accent">GIFTS</Link>
+              <Link href="/category/more-styles" className="hover:text-accent">MORE STYLES</Link>
+              <Link href="/category/stories" className="hover:text-accent">STORIES</Link>
+              <Link href="/category/gifts" className="hover:text-accent">GIFTS</Link>
             </div>
 
             <div className="flex items-center space-x-6">

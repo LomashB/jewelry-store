@@ -29,7 +29,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2 pt-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2 pt-8 md:pt-20">
           <div className="lg:col-span-1">
             <Image
               src={product.thumbnail}
@@ -44,11 +44,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
             <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
             <div className="mt-4">
               <p className="text-2xl font-medium text-gray-900">₹{product.price}</p>
-              {product.discountPercentage > 0 && (
-                <p className="text-lg text-gray-500 line-through">
-                  ₹{product.originalPrice}
-                </p>
-              )}
+              
+                <span className="text-lg text-gray-500 line-through">
+                  ₹{product.price} 
+                </span>
+                <span className="ml-2 text-sm text-[#50e3c2]">(25% OFF)</span>
             </div>
             
             <div className="mt-8">

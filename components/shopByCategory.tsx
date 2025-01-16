@@ -44,14 +44,14 @@ export default function ShopByCategory() {
   return (
     <div className="py-12 px-4 max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-8 text-black">Shop by</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
         {categories.map((category) => (
           <Link
             key={category.name}
             href={category.link}
             className="flex flex-col items-center group"
           >
-            <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4">
+            <div className="relative w-20 h-20 md:w-32 md:h-32 rounded-full overflow-hidden mb-4">
               <Image
                 src={category.image || "/placeholder.svg"}
                 alt={category.name}
