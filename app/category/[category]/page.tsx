@@ -1,5 +1,3 @@
-'use client';
-
 import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
@@ -34,20 +32,21 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-type Props = {
-  params: { category: string };
-};
-
-// Updated Page Component
-export default async function CategoryPage({ params }: Props) {
+// Page Component
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
   try {
-    const { category } = params;
+    // Await params before destructuring
+    const { category } = await params;
     const products = await getProductsByCategory(category);
 
     const formattedCategory = category
-      .split('-')
+      .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
 
     return (
       <div className="bg-white">
