@@ -1,76 +1,60 @@
-import { Product } from '@/types';
-import ProductCard from '@/components/ProductCard';
-import { notFound } from 'next/navigation';
+import { Product } from "@/types";
+import ProductCard from "@/components/ProductCard";
+import { notFound } from "next/navigation";
 
-interface CategoryPageProps {
-    params: {
-      category: string;
-    };
-    searchParams?: { [key: string]: string | string[] | undefined };
-  }
-  
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Fetches products from a specified category.
- * 
- * This function maps the given category to a corresponding category used by the API.
- * If a mapping is not found, it defaults to using the original category.
- * It then fetches products from the external API for the determined category.
- * 
- * @param category - The category to fetch products for.
- * @returns A promise that resolves to an array of products.
- * @throws An error if the fetch request fails.
- */
-
-/******  1cdbe60c-90d4-485b-bbce-2b9f84197bf0  *******/
 async function getProductsByCategory(category: string) {
+  // Category mapping
+  const categoryMapping: { [key: string]: string } = {
+    earrings: "beauty",
+    necklaces: "fragrances",
+    bracelets: "furniture",
+    rings: "groceries",
+    "more-styles": "beauty",
+    stories: "groceries",
+    gifts: "furniture",
+  };
 
-    // Category mapping
-    const categoryMapping: { [key: string]: string } = {
-        'earrings': 'beauty',
-        'necklaces': 'fragrances',
-        'bracelets': 'furniture',
-        'rings': 'groceries',
-        'more-styles': 'beauty',
-        'stories': 'groceries',
-        'gifts': 'furniture'
-      };
-  
-      // Use mapped category or fallback to original category
-      const apiCategory = categoryMapping[category] || category;
-    const res = await fetch(`https://dummyjson.com/products/category/${apiCategory}`, {
+  // Use mapped category or fallback to original category
+  const apiCategory = categoryMapping[category] || category;
+  const res = await fetch(
+    `https://dummyjson.com/products/category/${apiCategory}`,
+    {
       next: {
         revalidate: 60,
       },
-    });
-  
-    if (!res.ok) {
-      throw new Error("Failed to fetch products");
     }
-  
-    const data = await res.json();
-    return data.products;
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch products");
   }
 
-export async function generateStaticParams() {
-  // Define your categories here
-  const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
-  return categories.map((category) => ({
-    category: category,
-  }));
+  const data = await res.json();
+  return data.products;
 }
 
-export default async function CategoryPage({
-    params,
-  }: {
-    params: { category: string }
-  }) {
+export async function generateStaticParams() {
+    const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
+    return categories.map((category) => ({
+        category: category,
+    }));
+}
+
+
+type Props = {
+    params: {
+        category: string;
+    };
+    searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function CategoryPage({ params, searchParams }: Props) {
   try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 
     return (
       <div className="bg-white">
@@ -86,7 +70,7 @@ export default async function CategoryPage({
             </div>
 
             <div className="flex items-center gap-4">
-              <select 
+              <select
                 className="border rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                 defaultValue="featured"
               >
