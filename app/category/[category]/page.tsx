@@ -4,7 +4,6 @@ import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
 
 async function getProductsByCategory(category: string) {
-  // Category mapping
   const categoryMapping: { [key: string]: string } = {
     earrings: "beauty",
     necklaces: "fragrances",
@@ -15,7 +14,6 @@ async function getProductsByCategory(category: string) {
     gifts: "furniture",
   };
 
-  // Use mapped category or fallback to original category
   const apiCategory = categoryMapping[category] || category;
   const res = await fetch(
     `https://dummyjson.com/products/category/${apiCategory}`,
@@ -34,34 +32,21 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// export async function generateStaticParams() {
-//     const categories = ['earrings', 'necklaces', 'bracelets', 'rings', 'more-styles', 'stories', 'gifts'];
-//     return categories.map((category) => ({
-//         category: category,
-//     }));
-// }
+// Define the correct page props interface
+interface CategoryPageProps {
+  params: {
+    category: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
-
-type Props = {
-    params: {
-        category: string;
-    };
-    searchParams: { [key: string]: string | string[] | undefined };
-};
-
-interface PageProps {
-    params: {
-      category: string;
-    };
-  }
-
-  export default async function CategoryPage({ params }: PageProps) {
-    try {
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
 
     return (
       <div className="bg-white">
