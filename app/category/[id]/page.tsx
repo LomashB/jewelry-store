@@ -30,11 +30,19 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
+export async function generateStaticParams() {
+  const categories = ["earrings", "necklaces", "bracelets", "rings"];
+  return categories.map((category) => ({ id: category }));
+}
+
+props: { params: { id: 'earrings' } };
+
 // Page Component
 export default async function ProductPage({
   params,
+
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
   const { id: category } = await params; // Await the params here
   const products = await getProductsByCategory(category);
@@ -88,4 +96,3 @@ export default async function ProductPage({
     </div>
   );
 }
-
