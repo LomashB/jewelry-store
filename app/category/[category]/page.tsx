@@ -1,3 +1,4 @@
+'use client';
 import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
@@ -48,8 +49,14 @@ type Props = {
     searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function CategoryPage({ params, searchParams }: Props) {
-  try {
+interface PageProps {
+    params: {
+      category: string;
+    };
+  }
+
+  export default async function CategoryPage({ params }: PageProps) {
+    try {
     const products = await getProductsByCategory(params.category);
     const formattedCategory = params.category
         .split('-')
