@@ -34,15 +34,18 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// Page Component
+// Define the page component
 export default async function CategoryPage({
   params,
 }: {
   params: { category: string };
 }) {
   try {
-    const products = await getProductsByCategory(params.category);
-    const formattedCategory = params.category
+    // Ensure params.category is properly resolved
+    const category = await Promise.resolve(params.category);
+    const products = await getProductsByCategory(category);
+
+    const formattedCategory = category
       .split('-')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
