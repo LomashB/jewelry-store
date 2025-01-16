@@ -34,15 +34,14 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// Define the page component
-export default async function CategoryPage({
-  params,
-}: {
+type Props = {
   params: { category: string };
-}) {
+};
+
+// Updated Page Component
+export default async function CategoryPage({ params }: Props) {
   try {
-    // Ensure params.category is properly resolved
-    const category = await Promise.resolve(params.category);
+    const { category } = params;
     const products = await getProductsByCategory(category);
 
     const formattedCategory = category
