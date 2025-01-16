@@ -31,62 +31,61 @@ async function getProductsByCategory(category: string) {
 }
 
 // Page Component
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  try {
-    const { id: category } = await Promise.resolve(params);    
-    const products = await getProductsByCategory(category);
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: category } = await params; // Await the params here
+  const products = await getProductsByCategory(category);
 
-    // Format category name
-    const formattedCategory = category
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  // Format category name
+  const formattedCategory = category
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
-    return (
-      <div className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex justify-between items-baseline border-b border-gray-200 pb-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                {formattedCategory}
-              </h1>
-              <p className="mt-2 text-sm text-gray-500">
-                {products.length} results
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <select
-                className="border rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                defaultValue="featured"
-              >
-                <option value="featured">Featured</option>
-                <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-              </select>
-            </div>
+  return (
+    <div className="bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex justify-between items-baseline border-b border-gray-200 pb-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+              {formattedCategory}
+            </h1>
+            <p className="mt-2 text-sm text-gray-500">
+              {products.length} results
+            </p>
           </div>
-
-          <div className="mt-8">
-            {products.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-lg h-40 text-gray-500">
-                  No products found in this category.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {products.map((product: Product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+          <div className="flex items-center gap-4">
+            <select
+              className="border rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              defaultValue="featured"
+            >
+              <option value="featured">Featured</option>
+              <option value="newest">Newest</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
           </div>
         </div>
+        <div className="mt-8">
+          {products.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-lg h-40 text-gray-500">
+                No products found in this category.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {products.map((product: Product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    );
-  } catch (error) {
-    notFound();
-  }
+    </div>
+  );
 }
+
