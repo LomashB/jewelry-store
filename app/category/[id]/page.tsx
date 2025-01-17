@@ -18,6 +18,13 @@ interface Product {
   images: string[];
 }
 
+interface PageProps {
+  params: {
+    id: Promise<string>;
+  };
+}
+
+
 async function getProductsByCategory(category: Promise<string> | string) {
   const resolvedCategory = await category;
   
@@ -67,18 +74,14 @@ export const metadata: Metadata = {
   description: 'Browse our product categories',
 };
 
-export default async function Page({ 
-  params: { id } 
-}: { 
-  params: { id: Promise<string> } 
-}) {
-  const products = await getProductsByCategory(id);
+export default async function Page(props: PageProps) {
+  const products = await getProductsByCategory(props.params.id);
 
   if (!products || products.length === 0) {
     notFound();
   }
 
-  const formattedCategory = (await id)
+  const formattedCategory = (await props.params.id)
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
