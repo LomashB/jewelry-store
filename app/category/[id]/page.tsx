@@ -1,10 +1,26 @@
-import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
-import { Metadata } from 'next';
+import type { Metadata } from "next";
 
-// Fetch products by category
-async function getProductsByCategory(category: string): Promise<Product[]> {
+// Note: Make sure this type matches your Product interface
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  brand: string;
+  category: string;
+  thumbnail: string;
+  images: string[];
+}
+
+async function getProductsByCategory(category: Promise<string> | string) {
+  const resolvedCategory = await category;
+  
   const categoryMapping: { [key: string]: string } = {
     earrings: "beauty",
     necklaces: "fragrances",
@@ -15,7 +31,7 @@ async function getProductsByCategory(category: string): Promise<Product[]> {
     gifts: "furniture",
   };
 
-  const apiCategory = categoryMapping[category] || category;
+  const apiCategory = categoryMapping[resolvedCategory as string] || resolvedCategory;
   
   try {
     const res = await fetch(
@@ -37,29 +53,32 @@ async function getProductsByCategory(category: string): Promise<Product[]> {
   }
 }
 
-export const metadata: Metadata = {
-  title: 'Product Categories',
-  description: 'Browse our product categories',
-};
-
-export async function generateStaticParams() {
+export const generateStaticParams = async () => {
   return [
     { id: "earrings" },
     { id: "necklaces" },
     { id: "bracelets" },
     { id: "rings" }
   ];
-}
+};
 
-// Main page component
-async function CategoryPage({ params }: { params: { id: string } }) {
-  const products = await getProductsByCategory(params.id);
+export const metadata: Metadata = {
+  title: 'Product Categories',
+  description: 'Browse our product categories',
+};
 
-  if (!products.length) {
+export default async function Page({ 
+  params: { id } 
+}: { 
+  params: { id: Promise<string> } 
+}) {
+  const products = await getProductsByCategory(id);
+
+  if (!products || products.length === 0) {
     notFound();
   }
 
-  const formattedCategory = params.id
+  const formattedCategory = (await id)
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
@@ -99,5 +118,3 @@ async function CategoryPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-export default CategoryPage;
