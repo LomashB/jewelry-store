@@ -30,29 +30,22 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
-// Generate static params for SSG
 export async function generateStaticParams() {
   const categories = ["earrings", "necklaces", "bracelets", "rings"];
   return categories.map((category) => ({ id: category }));
 }
 
-// Page Component
-export default async function ProductPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id: category } = await params; // Await the params here
-  let products: Product[];
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
-  try {
-    products = await getProductsByCategory(category);
-  } catch (error) {
-    notFound(); // Handle error with a 404 page
-  }
+export default async function ProductPage({ params }: PageProps) {
+  const products = await getProductsByCategory(params.id);
 
-  // Format category name
-  const formattedCategory = category
+  const formattedCategory = params.id
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
