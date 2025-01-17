@@ -57,61 +57,46 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Product Image */}
-            <div className="relative h-64 md:h-96">
-              <Image
-                src={product.thumbnail}
-                alt={product.title}
-                fill
-                className="object-cover rounded-lg"
-                priority
-              />
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2 pt-12">
+      <div className="lg:col-span-1">
+        <Image
+          src={product.thumbnail}
+          alt={product.title}
+          width={600}
+          height={600}
+          className="rounded-lg"
+        />
+      </div>
+
+      <div className="lg:col-span-1">
+        <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
+        <div className="mt-4">
+          <p className="text-2xl font-medium text-gray-900">₹{product.price}</p>
+          {product.discountPercentage > 0 && (
+            <div>
+            <span className="text-sm text-gray-500 line-through">
+              ₹{product.price}
+            </span>
+            <span className="text-sm text-[#50e3c2] ml-2 ">
+            20% OFF
+          </span>
             </div>
+          )}
+        </div>
+        
+        <div className="mt-8 p-4">
+          <AddToCartButton product={product} />
+          <WishlistButton product={product} />
+        </div>
 
-            {/* Product Details */}
-            <div className="space-y-4">
-              <h1 className="text-2xl font-bold text-gray-900">
-                {product.title}
-              </h1>
-              
-              {/* Price Section */}
-              <div className="space-y-2">
-                <p className="text-2xl font-semibold text-green-600">
-                  ₹{product.price}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <p className="text-gray-500 line-through">
-                    ₹{(product.price / 0.75).toFixed(2)}
-                  </p>
-                  <span className="text-green-600 font-medium text-sm bg-green-50 px-2 py-1 rounded">
-                    25% OFF
-                  </span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-4 pt-4">
-                <AddToCartButton product={product} />
-                <WishlistButton product={product} />
-              </div>
-            </div>
-          </div>
-
-          {/* Description Section */}
-          <div className="mt-8 border-t pt-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Description
-            </h2>
-            <p className="text-gray-700 leading-relaxed">
-              {product.description}
-            </p>
-          </div>
+        <div className="mt-8">
+          <h3 className="text-lg font-medium text-gray-900">Description</h3>
+          <p className="mt-4 text-gray-600">{product.description}</p>
         </div>
       </div>
     </div>
+  </div>
+
   );
 }
