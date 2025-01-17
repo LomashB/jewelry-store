@@ -1,8 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
-import type { Metadata } from "next";
+import { useParams } from "next/navigation";
 
-// Note: Make sure this type matches your Product interface
+// Product interface
 interface Product {
   id: number;
   title: string;
@@ -18,13 +21,7 @@ interface Product {
   images: string[];
 }
 
-interface PageProps {
-  params: {
-    id: string; // Change from Promise<string> to string
-  };
-}
-
-async function getProductsByCategory(category: string) {
+function getProductsByCategory(category: string): Promise<Product[]> {
   const categoryMapping: { [key: string]: string } = {
     earrings: "beauty",
     necklaces: "fragrances",
@@ -37,48 +34,62 @@ async function getProductsByCategory(category: string) {
 
   const apiCategory = categoryMapping[category] || category;
 
-  try {
-    const res = await fetch(
-      `https://dummyjson.com/products/category/${apiCategory}`,
-      {
-        next: { revalidate: 60 },
+  return fetch(`https://dummyjson.com/products/category/${apiCategory}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch products");
       }
-    );
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch products");
-    }
-
-    const data = await res.json();
-    return data.products;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return [];
-  }
+      return res.json();
+    })
+    .then((data) => data.products)
+    .catch((error) => {
+      console.error("Error fetching products:", error);
+      return [];
+    });
 }
 
-export const generateStaticParams = async () => {
-  return [
-    { id: "earrings" },
-    { id: "necklaces" },
-    { id: "bracelets" },
-    { id: "rings" },
-  ];
-};
+export default function CategoryPage() {
+  const params = useParams();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const metadata: Metadata = {
-  title: "Product Categories",
-  description: "Browse our product categories",
-};
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedProducts = await getProductsByCategory(params.id as string);
+        if (fetchedProducts.length === 0) {
+          setError("No products found in this category");
+        }
+        setProducts(fetchedProducts);
+      } catch (err) {
+        setError("Failed to load products");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-export default async function Page(props: PageProps) {
-  const products = await getProductsByCategory(props.params.id);
+    fetchProducts();
+  }, [params.id]);
 
-  if (!products || products.length === 0) {
-    notFound();
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
   }
 
-  const formattedCategory = props.params.id
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  const formattedCategory = (params.id as string)
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
