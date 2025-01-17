@@ -20,14 +20,11 @@ interface Product {
 
 interface PageProps {
   params: {
-    id: Promise<string>;
+    id: string; // Change from Promise<string> to string
   };
 }
 
-
-async function getProductsByCategory(category: Promise<string> | string) {
-  const resolvedCategory = await category;
-  
+async function getProductsByCategory(category: string) {
   const categoryMapping: { [key: string]: string } = {
     earrings: "beauty",
     necklaces: "fragrances",
@@ -38,8 +35,8 @@ async function getProductsByCategory(category: Promise<string> | string) {
     gifts: "furniture",
   };
 
-  const apiCategory = categoryMapping[resolvedCategory as string] || resolvedCategory;
-  
+  const apiCategory = categoryMapping[category] || category;
+
   try {
     const res = await fetch(
       `https://dummyjson.com/products/category/${apiCategory}`,
@@ -65,13 +62,13 @@ export const generateStaticParams = async () => {
     { id: "earrings" },
     { id: "necklaces" },
     { id: "bracelets" },
-    { id: "rings" }
+    { id: "rings" },
   ];
 };
 
 export const metadata: Metadata = {
-  title: 'Product Categories',
-  description: 'Browse our product categories',
+  title: "Product Categories",
+  description: "Browse our product categories",
 };
 
 export default async function Page(props: PageProps) {
@@ -81,7 +78,7 @@ export default async function Page(props: PageProps) {
     notFound();
   }
 
-  const formattedCategory = (await props.params.id)
+  const formattedCategory = props.params.id
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
@@ -94,9 +91,7 @@ export default async function Page(props: PageProps) {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               {formattedCategory}
             </h1>
-            <p className="mt-2 text-sm text-gray-500">
-              {products.length} results
-            </p>
+            <p className="mt-2 text-sm text-gray-500">{products.length} results</p>
           </div>
           <div className="flex items-center gap-4">
             <select
