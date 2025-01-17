@@ -1,64 +1,112 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Product } from '@/types/index';
 import { AddToCartButton, WishlistButton } from '../../../components/ProductButtons';
 
-async function getProduct(id: string) {
-  const res = await fetch(`https://dummyjson.com/products/${id}`, {
-    next: { revalidate: 60 },
-  });
+export default function ProductPage({ params }: { params: { id: string } }) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch product');
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`https://dummyjson.com/products/${params.id}`, {
+          next: { revalidate: 60 },
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch product');
+        }
+
+        const data = await res.json();
+        setProduct(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [params.id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-gray-200 rounded-full animate-spin border-t-blue-500"></div>
+      </div>
+    );
   }
 
-  return res.json();
-}
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-red-500 text-lg font-medium">Error: {error}</p>
+      </div>
+    );
+  }
 
-export async function generateStaticParams() {
-  const res = await fetch('https://dummyjson.com/products');
-  const data = await res.json();
-
-  return data.products.map((product: Product) => ({
-    id: product.id.toString(),
-  }));
-}
-
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+  if (!product) {
+    return null;
+  }
 
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2 pt-8 md:pt-20">
-          <div className="lg:col-span-1">
-            <Image
-              src={product.thumbnail}
-              alt={product.title}
-              width={600}
-              height={600}
-              className="rounded-lg"
-            />
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Product Image */}
+            <div className="relative h-64 md:h-96">
+              <Image
+                src={product.thumbnail}
+                alt={product.title}
+                fill
+                className="object-cover rounded-lg"
+                priority
+              />
+            </div>
+
+            {/* Product Details */}
+            <div className="space-y-4">
+              <h1 className="text-2xl font-bold text-gray-900">
+                {product.title}
+              </h1>
+              
+              {/* Price Section */}
+              <div className="space-y-2">
+                <p className="text-2xl font-semibold text-green-600">
+                  ₹{product.price}
+                </p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-gray-500 line-through">
+                    ₹{(product.price / 0.75).toFixed(2)}
+                  </p>
+                  <span className="text-green-600 font-medium text-sm bg-green-50 px-2 py-1 rounded">
+                    25% OFF
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4 pt-4">
+                <AddToCartButton product={product} />
+                <WishlistButton product={product} />
+              </div>
+            </div>
           </div>
 
-          <div className="lg:col-span-1">
-            <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-            <div className="mt-4">
-              <p className="text-2xl font-medium text-gray-900">₹{product.price}</p>
-              <span className="text-lg text-gray-500 line-through">
-                ₹{(product.price / 0.75).toFixed(2)} 
-              </span>
-              <span className="ml-2 text-sm text-[#50e3c2]">(25% OFF)</span>
-            </div>
-
-            <div className="mt-8">
-              <AddToCartButton product={product} />
-              <WishlistButton product={product} />
-            </div>
-
-            <div className="mt-8">
-              <h3 className="text-lg font-medium text-gray-900">Description</h3>
-              <p className="mt-4 text-gray-600">{product.description}</p>
-            </div>
+          {/* Description Section */}
+          <div className="mt-8 border-t pt-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Description
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              {product.description}
+            </p>
           </div>
         </div>
       </div>
