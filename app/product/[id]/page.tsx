@@ -4,7 +4,7 @@ import { AddToCartButton, WishlistButton } from '../../../components/ProductButt
 
 async function getProduct(id: string) {
   const res = await fetch(`https://dummyjson.com/products/${id}`, {
-    next: { revalidate: 60 }
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
@@ -44,13 +44,12 @@ export default async function ProductPage({ params }: { params: { id: string } }
             <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
             <div className="mt-4">
               <p className="text-2xl font-medium text-gray-900">₹{product.price}</p>
-              
-                <span className="text-lg text-gray-500 line-through">
-                  ₹{product.price} 
-                </span>
-                <span className="ml-2 text-sm text-[#50e3c2]">(25% OFF)</span>
+              <span className="text-lg text-gray-500 line-through">
+                ₹{(product.price / 0.75).toFixed(2)} 
+              </span>
+              <span className="ml-2 text-sm text-[#50e3c2]">(25% OFF)</span>
             </div>
-            
+
             <div className="mt-8">
               <AddToCartButton product={product} />
               <WishlistButton product={product} />
