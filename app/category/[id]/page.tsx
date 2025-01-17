@@ -1,6 +1,7 @@
 import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
+import { Metadata, ResolvingMetadata } from 'next';
 
 // Fetch products by category
 async function getProductsByCategory(category: string) {
@@ -30,19 +31,26 @@ async function getProductsByCategory(category: string) {
   return data.products;
 }
 
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  return {
+    title: `${params.id.charAt(0).toUpperCase() + params.id.slice(1)} Products`,
+  }
+}
+
 export async function generateStaticParams() {
   const categories = ["earrings", "necklaces", "bracelets", "rings"];
   return categories.map((category) => ({ id: category }));
 }
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function ProductPage({ params }: PageProps) {
+export default async function ProductPage({ params, searchParams }: Props) {
   const products = await getProductsByCategory(params.id);
 
   const formattedCategory = params.id
