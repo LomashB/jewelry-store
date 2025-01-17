@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { use } from 'react';
 import Image from 'next/image';
 import { Product } from '@/types/index';
 import { AddToCartButton, WishlistButton } from '../../../components/ProductButtons';
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +16,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`https://dummyjson.com/products/${params.id}`, {
+        const res = await fetch(`https://dummyjson.com/products/${resolvedParams.id}`, {
           next: { revalidate: 60 },
         });
 
@@ -32,7 +34,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     };
 
     fetchProduct();
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   if (isLoading) {
     return (
