@@ -1,11 +1,7 @@
 import { Product } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
-
-// Define the props type using Next.js conventions
-interface Props  {
-  params: Promise<{ id: string }>;
-};
+import { Metadata } from 'next';
 
 // Fetch products by category
 async function getProductsByCategory(category: string): Promise<Product[]> {
@@ -41,7 +37,11 @@ async function getProductsByCategory(category: string): Promise<Product[]> {
   }
 }
 
-// Generate static params for static site generation
+export const metadata: Metadata = {
+  title: 'Product Categories',
+  description: 'Browse our product categories',
+};
+
 export async function generateStaticParams() {
   return [
     { id: "earrings" },
@@ -51,21 +51,15 @@ export async function generateStaticParams() {
   ];
 }
 
-// Define metadata
-export const metadata = {
-  title: 'Product Category',
-  description: 'View our product categories',
-};
-
 // Main page component
-const ProductPage = async (props: Props) => {
-  const products = await getProductsByCategory((await props.params).id);
+async function CategoryPage({ params }: { params: { id: string } }) {
+  const products = await getProductsByCategory(params.id);
 
   if (!products.length) {
     notFound();
   }
 
-  const formattedCategory = (await props.params).id
+  const formattedCategory = params.id
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
@@ -106,4 +100,4 @@ const ProductPage = async (props: Props) => {
   );
 }
 
-export default ProductPage
+export default CategoryPage;
