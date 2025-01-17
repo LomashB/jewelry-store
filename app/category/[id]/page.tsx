@@ -3,8 +3,8 @@ import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
 
 // Define the props type using Next.js conventions
-type Props = {
-  params: { id: string };
+interface Props  {
+  params: Promise<{ id: string }>;
 };
 
 // Fetch products by category
@@ -58,14 +58,14 @@ export const metadata = {
 };
 
 // Main page component
-export default async function Page({ params }: Props) {
-  const products = await getProductsByCategory(params.id);
+const ProductPage = async (props: Props) => {
+  const products = await getProductsByCategory((await props.params).id);
 
   if (!products.length) {
     notFound();
   }
 
-  const formattedCategory = params.id
+  const formattedCategory = (await props.params).id
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
@@ -105,3 +105,5 @@ export default async function Page({ params }: Props) {
     </div>
   );
 }
+
+export default ProductPage
